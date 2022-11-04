@@ -1,5 +1,6 @@
 package be.lennix.oshish.cookie;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.catalina.filters.ExpiresFilter;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static be.lennix.oshish.cookie.OshiShCookie.DefaultOshishCookieData.*;
 
 @Component
 public class CookieFilter implements Filter {
@@ -32,18 +35,17 @@ public class CookieFilter implements Filter {
         } catch (NullPointerException ignored) {}
 
         if(cookie.isPresent()) {
-            oshiShSaveDto = ((OshiShCookie) cookie.get()).getOshiShSaveDto();
+            oshiShSaveDto = new ObjectMapper()
+                    .readValue(cookie.get().getValue(), OshiShSaveDto.class);
         } else {
             oshiShSaveDto = OshiShSaveDto.builder()
-                    .youtubers(List.of("Virgil", "Raian", "Lila", "Diana", "Lapynne"))
+                    .youtubers(YOUTUBERS)
+                    .hashtags(HASHTAGS)
                     .build();
         }
 
         ((HttpServletResponse) servletResponse).addCookie(new OshiShCookie(oshiShSaveDto));
 
         filterChain.doFilter(servletRequest, servletResponse);
-    }
-
-    private void setupNewOshiShCookie() {
     }
 }

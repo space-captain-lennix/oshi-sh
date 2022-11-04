@@ -14,5 +14,4 @@ import java.util.List;
 public class OshiShSaveDto {
     public List<String> youtubers;
     public List<String> hashtags;
-
 }
